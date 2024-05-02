@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Welcome to the Project management Dashboard
 
-## Getting Started
+Frontend Live Link: https://project-management-frontend-seven.vercel.app/
 
-First, run the development server:
+<!-- HOW TO RUN -->
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Run this repository on your local machine
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Please follow the below instructions to run this repository on your local machine:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+1. Clone this entire repository
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+   ```sh
+   git clone https://github.com/Khairul38/project-management-frontend
+   ```
 
-## Learn More
+2. Go to the cloned project directory
 
-To learn more about Next.js, take a look at the following resources:
+   ```sh
+   cd project-management-frontend
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+3. Make environment file with the following system
 
-## Deploy on Vercel
+   ```sh
+   # Make .env.local file accordingly :
+   NEXT_PUBLIC_API_BASE_URL=https://fake-auth-api-json-server.onrender.com
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+4. Install dependencies
+
+   ```sh
+   yarn
+
+   # or
+
+   npm i
+   ```
+
+5. Run project
+
+   ```sh
+   # development mode
+   yarn dev
+   #or
+   npm run dev
+
+   # build mode
+   yarn build
+   #or
+   npm run build
+
+   # production mode
+   yarn start
+   #or
+   npm run start
+   ```
+
+## Thanks
