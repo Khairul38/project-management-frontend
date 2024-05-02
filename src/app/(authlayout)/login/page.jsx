@@ -1,18 +1,40 @@
 "use client";
 
 import React from "react";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { useAuthStore } from "../../../store/store";
+import { setToLocalStorage } from "../../../utils/local-storage";
 
 const LoginPage = () => {
+  const user = useAuthStore((state) => state.user);
+  const userLoggedIn = useAuthStore((state) => state.userLoggedIn);
+  // const queryClient = useQueryClient();
+
+  console.log(user);
+
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: async (data) =>
+      axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/login`, data),
+    onSuccess: (data) => {
+      userLoggedIn(data?.data?.user);
+      setToLocalStorage("auth", data?.data?.user);
+      message.success("Login Successful");
+      // queryClient.invalidateQueries([""])
+    },
+    onError: (error) => message.error(`${error?.response?.data}`),
+  });
+
   const onFinish = (values) => {
-    console.log("Success:", values);
+    mutate(values);
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+    message.error(errorInfo.errorFields[0].errors[0]);
   };
 
   return (
@@ -63,6 +85,7 @@ const LoginPage = () => {
 
         <FormItem>
           <Button
+            loading={isPending}
             type="primary"
             htmlType="submit"
             className="login-form-button w-full"

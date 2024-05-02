@@ -6,19 +6,40 @@ import FormItem from "antd/es/form/FormItem";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { useAuthStore } from "../../../store/store";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { setToLocalStorage } from "../../../utils/local-storage";
 
 const RegisterPage = () => {
-  const users = useAuthStore((state) => state.users);
+  const user = useAuthStore((state) => state.user);
+  const userLoggedIn = useAuthStore((state) => state.userLoggedIn);
+  const queryClient = useQueryClient();
 
-  console.log(users);
+  console.log(user);
+
+  // const { data, isLoading, isError } = useQuery({
+  //   queryKey: ["movies"], //Array according to Documentation
+  //   queryFn: async () => await getMovies(),
+  // });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (data) =>
+      axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/register`, data),
+    onSuccess: (data) => {
+      userLoggedIn(data?.data?.user);
+      setToLocalStorage("auth", data?.data?.user);
+      message.success("Registration Successful");
+      // queryClient.invalidateQueries([""])
+    },
+    onError: (error) => message.error(`${error?.response?.data}`),
+  });
 
   const onFinish = (values) => {
-    console.log("Success:", values);
+    mutate(values);
   };
 
   const onFinishFailed = (errorInfo) => {
     message.error(errorInfo.errorFields[0].errors[0]);
-    console.log("Failed:", errorInfo);
   };
   return (
     <div className="flex justify-center min-h-screen items-center">
@@ -83,6 +104,7 @@ const RegisterPage = () => {
 
         <FormItem>
           <Button
+            loading={isPending}
             type="primary"
             htmlType="submit"
             className="login-form-button w-full"

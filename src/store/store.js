@@ -1,10 +1,8 @@
 import { create } from "zustand";
 
 export const useAuthStore = create((set) => ({
-  users: [
-    { name: "Test User", email: "testuser@gmail.com", password: "12345" },
-  ],
-  register: (data) => set((state) => ({ users: [...state.users, data] })),
+  user: undefined,
+  userLoggedIn: (data) => set({ user: data }),
 }));
 
 // export const useStore = create((set) => ({
