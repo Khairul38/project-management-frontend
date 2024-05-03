@@ -61,7 +61,7 @@ const LoginPage = () => {
           <Input
             prefix={<UserOutlined className="site-form-item-icon" />}
             type="email"
-            placeholder="Email"
+            placeholder="Email/test@g.com"
           />
         </FormItem>
         <FormItem
@@ -76,7 +76,7 @@ const LoginPage = () => {
           <Input
             prefix={<LockOutlined className="site-form-item-icon" />}
             type="password"
-            placeholder="Password"
+            placeholder="Password/1234"
           />
         </FormItem>
         <FormItem>

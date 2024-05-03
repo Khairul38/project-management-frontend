@@ -1,11 +1,32 @@
-"use client"
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import React from 'react';
+import { UserOutlined } from "@ant-design/icons";
+import { Avatar, Button, Dropdown } from "antd";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
 
 const Navigation = () => {
   const pathname = usePathname();
+
+  const items = [
+    {
+      key: "1",
+      label: "Name",
+    },
+    {
+      key: "2",
+      label: "Email",
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "3",
+      danger: true,
+      label: <button>Logout</button>,
+    },
+  ];
   return (
     <div className="flex items-center justify-between w-full h-16 px-10 bg-white bg-opacity-75">
       <Link href="/">
@@ -50,7 +71,7 @@ const Navigation = () => {
       </Link>
 
       <div className="flex">
-        <Link href="/teams">
+        <Link href="/">
           <p
             className={`mx-2 text-sm font-semibold hover:text-indigo-700 ${
               pathname === "/" ? "text-indigo-700" : "text-gray-600"
@@ -78,6 +99,19 @@ const Navigation = () => {
       </button> */}
       <div className="flex items-center justify-center">
         {/* <DropdownProfile user={user} handleLogout={handleLogout} /> */}
+        <Dropdown
+          menu={{
+            items,
+          }}
+          placement="bottomRight"
+        >
+          {/* <Button>bottomRight</Button> */}
+          <Avatar
+            style={{ cursor: "pointer" }}
+            size="large"
+            icon={<UserOutlined />}
+          />
+        </Dropdown>
       </div>
     </div>
   );
