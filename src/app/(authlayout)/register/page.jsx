@@ -15,7 +15,7 @@ const RegisterPage = () => {
   const userLoggedIn = useAuthStore((state) => state.userLoggedIn);
   const queryClient = useQueryClient();
 
-  console.log(user);
+  // console.log(user);
 
   // const { data, isLoading, isError } = useQuery({
   //   queryKey: ["movies"], //Array according to Documentation
@@ -24,10 +24,19 @@ const RegisterPage = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data) =>
-      axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/register`, data),
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/register`,
+        data
+      ),
     onSuccess: (data) => {
-      userLoggedIn(data?.data?.user);
-      setToLocalStorage("auth", data?.data?.user);
+      userLoggedIn({
+        ...data?.data?.user,
+        accessToken: data?.data?.accessToken,
+      });
+      setToLocalStorage("auth", {
+        ...data?.data?.user,
+        accessToken: data?.data?.accessToken,
+      });
       message.success("Registration Successful");
       // queryClient.invalidateQueries([""])
     },

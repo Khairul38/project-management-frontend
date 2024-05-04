@@ -3,6 +3,7 @@ import { create } from "zustand";
 export const useAuthStore = create((set) => ({
   user: undefined,
   userLoggedIn: (data) => set({ user: data }),
+  userLoggedOut: () => set({ user: undefined }),
 }));
 
 // export const useStore = create((set) => ({

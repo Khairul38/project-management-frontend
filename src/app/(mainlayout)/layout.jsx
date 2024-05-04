@@ -14,7 +14,7 @@ const MainLayout = ({ children }) => {
 
   useEffect(() => {
     const localAuth = getFromLocalStorage("auth");
-    console.log(localAuth);
+    // console.log(localAuth);
 
     if (!user) {
       if (localAuth != null) {

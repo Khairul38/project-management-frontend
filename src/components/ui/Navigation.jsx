@@ -5,18 +5,21 @@ import { Avatar, Button, Dropdown } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { useAuthStore } from "../../store/store";
 
 const Navigation = () => {
+  const user = useAuthStore((state) => state.user);
+  const userLoggedOut = useAuthStore((state) => state.userLoggedIn);
   const pathname = usePathname();
 
   const items = [
     {
       key: "1",
-      label: "Name",
+      label: `${user?.name}`,
     },
     {
       key: "2",
-      label: "Email",
+      label: `${user?.email}`,
     },
     {
       type: "divider",
@@ -24,7 +27,16 @@ const Navigation = () => {
     {
       key: "3",
       danger: true,
-      label: <button>Logout</button>,
+      label: (
+        <button
+          onClick={() => {
+            userLoggedOut();
+            localStorage.clear();
+          }}
+        >
+          Logout
+        </button>
+      ),
     },
   ];
   return (

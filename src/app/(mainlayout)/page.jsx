@@ -1,7 +1,27 @@
+"use client";
+
 import React from "react";
-import Navigation from "../../components/ui/Navigation"
+import Navigation from "../../components/ui/Navigation";
+import axios from "axios";
+import Loader from "../../components/common/Loader";
+import Project from "../../components/ui/Project";
+import { useQuery } from "@tanstack/react-query";
+import { useAuthStore } from "../../store/store";
 
 const HomePage = () => {
+  const user = useAuthStore((state) => state.user);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["projects"],
+    queryFn: async () =>
+      await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/projects`),
+  });
+  console.log(data);
+
+  if (isLoading)
+    return (
+      <Loader className="h-[50vh] flex items-end justify-center" size="large" />
+    );
+
   return (
     <>
       <div className="flex flex-col w-screen h-screen overflow-auto text-gray-700 bg-gradient-to-tr from-blue-200 via-indigo-200 to-pink-200">
@@ -27,7 +47,11 @@ const HomePage = () => {
             </svg>
           </button>
         </div>
-        {/* {content} */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 px-10 mt-4 gap-6 overflow-auto">
+          {data?.data.map((project) => (
+            <Project key={project.id} project={project} loggedInUser={user} />
+          ))}
+        </div>
       </div>
       {/* <AddTeamModal
         opened={opened}

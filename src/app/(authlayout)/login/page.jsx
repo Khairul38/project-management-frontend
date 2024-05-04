@@ -15,14 +15,21 @@ const LoginPage = () => {
   const userLoggedIn = useAuthStore((state) => state.userLoggedIn);
   // const queryClient = useQueryClient();
 
-  console.log(user);
+  // console.log(user);
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: async (data) =>
-      axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/login`, data),
+      await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/login`, data),
     onSuccess: (data) => {
-      userLoggedIn(data?.data?.user);
-      setToLocalStorage("auth", data?.data?.user);
+      // console.log(data);
+      userLoggedIn({
+        ...data?.data?.user,
+        accessToken: data?.data?.accessToken,
+      });
+      setToLocalStorage("auth", {
+        ...data?.data?.user,
+        accessToken: data?.data?.accessToken,
+      });
       message.success("Login Successful");
       // queryClient.invalidateQueries([""])
     },

@@ -10,6 +10,6 @@
 }
 
 /* Override base SVG style to work with Ant Design */
-/* svg {
+svg {
   vertical-align: initial;
-} */
+}
