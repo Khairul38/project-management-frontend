@@ -1,7 +1,7 @@
 "use client";
 
 import { UserOutlined } from "@ant-design/icons";
-import { Avatar, Button, Dropdown } from "antd";
+import { Avatar, Dropdown } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -11,6 +11,13 @@ const Navigation = () => {
   const user = useAuthStore((state) => state.user);
   const userLoggedOut = useAuthStore((state) => state.userLoggedIn);
   const pathname = usePathname();
+
+  const onClick = ({ key }) => {
+    if (key === "3") {
+      userLoggedOut();
+      localStorage.clear();
+    }
+  };
 
   const items = [
     {
@@ -27,16 +34,7 @@ const Navigation = () => {
     {
       key: "3",
       danger: true,
-      label: (
-        <button
-          onClick={() => {
-            userLoggedOut();
-            localStorage.clear();
-          }}
-        >
-          Logout
-        </button>
-      ),
+      label: "Logout",
     },
   ];
   return (
@@ -114,6 +112,7 @@ const Navigation = () => {
         <Dropdown
           menu={{
             items,
+            onClick,
           }}
           placement="bottomRight"
         >

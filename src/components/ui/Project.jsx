@@ -78,9 +78,7 @@ const Project = ({ project, loggedInUser }) => {
 
         <span
           // style={{
-          //   // color: projectColor,
-          //   backgroundColor: projectColor,
-          //   opacity: 0.2,
+          //   color: projectColor,
           // }}
           className={`flex items-center h-6 px-3 text-xs font-semibold rounded-full text-[${projectColor}] bg-[${projectColor}] bg-opacity-20`}
         >

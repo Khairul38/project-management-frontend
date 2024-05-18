@@ -1,21 +1,33 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Navigation from "../../components/ui/Navigation";
 import axios from "axios";
 import Loader from "../../components/common/Loader";
 import Project from "../../components/ui/Project";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "../../store/store";
+import MultiModal from "../../components/common/MultiModal";
 
 const HomePage = () => {
+  const [open, setOpen] = useState(false);
   const user = useAuthStore((state) => state.user);
+
+  // Get Projects
   const { data, isLoading, isError } = useQuery({
     queryKey: ["projects"],
     queryFn: async () =>
       await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/projects`),
   });
-  console.log(data);
+
+  // Create Projects
+
+  const handleModalOk = () => {};
+  const handleModalCancel = () => {
+    setOpen(false);
+  };
+
+  // console.log(data);
 
   if (isLoading)
     return (
@@ -29,7 +41,7 @@ const HomePage = () => {
         <div className="px-10 mt-6 flex justify-between">
           <h1 className="text-2xl font-bold">Projects</h1>
           <button
-            // onClick={controlModal}
+            onClick={() => setOpen(true)}
             className="flex items-center justify-center w-6 h-6 ml-auto text-indigo-500 rounded hover:bg-indigo-500 hover:text-indigo-100"
           >
             <svg
@@ -53,12 +65,15 @@ const HomePage = () => {
           ))}
         </div>
       </div>
-      {/* <AddTeamModal
-        opened={opened}
-        controlModal={controlModal}
-        notify={notify}
-      /> */}
-      {/* <ToastContainer autoClose={3000} theme="colored" /> */}
+      <MultiModal
+        title="Create Project"
+        open={open}
+        setOpen={setOpen}
+        handleOk={handleModalOk}
+        handleCancel={handleModalCancel}
+      >
+        <p>Test modal</p>
+      </MultiModal>
     </>
   );
 };

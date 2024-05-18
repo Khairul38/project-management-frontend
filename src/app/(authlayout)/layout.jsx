@@ -1,17 +1,37 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthStore } from "../../store/store";
+import Loader from "../../components/common/Loader";
+import { getFromLocalStorage } from "../../utils/local-storage";
 
 const AuthLayout = ({ children }) => {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
-  // console.log(user)
+  const userLoggedIn = useAuthStore((state) => state.userLoggedIn);
+  const [loading, setLoading] = useState(true);
 
-  if (user) {
-    router.push("/");
-  }
+  useEffect(() => {
+    const localAuth = getFromLocalStorage("auth");
+    // console.log(localAuth);
+
+    if (!user) {
+      if (localAuth != null) {
+        userLoggedIn(localAuth);
+        router.push("/");
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
+    }
+    setLoading(false);
+  }, [user, router, userLoggedIn]);
+
+  if (loading)
+    return (
+      <Loader className="h-[50vh] flex items-end justify-center" size="large" />
+    );
 
   return <>{children}</>;
 };
