@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 
 const Project = ({ project, loggedInUser }) => {
-  const { id, projectName, projectColor, description, date, members } = project;
+  const { id, title, color, description, date, members } = project;
 
   const router = useRouter();
 
@@ -77,12 +77,12 @@ const Project = ({ project, loggedInUser }) => {
         </div>
 
         <span
-          // style={{
-          //   color: projectColor,
-          // }}
-          className={`flex items-center h-6 px-3 text-xs font-semibold rounded-full text-[${projectColor}] bg-[${projectColor}] bg-opacity-20`}
+          style={{
+            color: color,
+          }}
+          className={`flex items-center h-6 px-3 text-xs font-semibold rounded-full bg-[${color}] bg-opacity-20`}
         >
-          <p>{projectName}</p>
+          <p>{title}</p>
         </span>
         <h4 className="mt-3 text-sm font-medium">{description}</h4>
         <div className="mt-2 flex gap-1">

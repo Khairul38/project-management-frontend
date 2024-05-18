@@ -3,6 +3,7 @@ import { Button, Modal } from "antd";
 
 const MultiModal = ({
   children,
+  button,
   title,
   open,
   setOpen,
@@ -29,9 +30,7 @@ const MultiModal = ({
   // };
   return (
     <>
-      {/* <Button type="primary" onClick={showModal}>
-        Open Modal with async logic
-      </Button> */}
+      {button && button}
       <Modal
         title={title ? title : "Title"}
         open={open}

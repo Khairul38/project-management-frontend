@@ -109,7 +109,7 @@ const RegisterPage = () => {
         autoComplete="off"
       >
         <FormItem
-          name="name"
+          name="username"
           rules={[
             {
               required: true,
@@ -119,7 +119,7 @@ const RegisterPage = () => {
         >
           <Input
             prefix={<UserOutlined className="site-form-item-icon" />}
-            type="name"
+            type="username"
             placeholder="Name"
           />
         </FormItem>
@@ -147,7 +147,7 @@ const RegisterPage = () => {
             },
           ]}
         >
-          <Input
+          <Input.Password
             prefix={<LockOutlined className="site-form-item-icon" />}
             type="password"
             placeholder="Password"
