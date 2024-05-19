@@ -94,20 +94,22 @@ const ProjectCreateForm = ({
         <Select
           mode="multiple"
           allowClear
-          // virtual
-          // listItemHeight={10}
-          // listHeight={250}
+          virtual
+          listItemHeight={10}
+          listHeight={250}
+          // maxTagCount="responsive" // This helps manage the display of selected tags
+          // dropdownRender={(menu) => <div>{menu}</div>}
           style={{
             width: "100%",
           }}
           placeholder="Please select"
           onChange={(selectedIds) => {
             const selectedUsers = selectedIds.map((id) => userMap[id]);
-            form.setFieldsValue({ members: selectedUsers });
+            form.setFieldsValue({ membersDetails: selectedUsers });
           }}
           options={userData.map((user) => ({
             label: user.email,
-            value: user.id,
+            value: user.email,
           }))}
         />
       </FormItem>
