@@ -25,7 +25,7 @@ Please follow the below instructions to run this repository on your local machin
 
    ```sh
    # Make .env.local file accordingly :
-   NEXT_PUBLIC_API_BASE_URL=https://fake-auth-api-json-server.onrender.com
+   NEXT_PUBLIC_API_BASE_URL=https://fake-api-json-server-production.up.railway.app
 
    ```
 
