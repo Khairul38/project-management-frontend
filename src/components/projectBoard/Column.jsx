@@ -16,7 +16,7 @@ const Column = ({ boardTasks, stage, projectData }) => {
       if (searchString.length === 0) {
         return boardTask;
       } else {
-        return boardTask.description
+        return boardTask.title
           .toLowerCase()
           .match(searchString.toLowerCase())
           ? { ...boardTask, match: true }

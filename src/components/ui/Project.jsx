@@ -18,7 +18,7 @@ const Project = ({ project, loggedInUser, usersData }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  // Create Projects
+  // Delete Project
   const { mutate, isPending, error } = useMutation({
     mutationFn: async (id) =>
       await axios.delete(
@@ -62,7 +62,7 @@ const Project = ({ project, loggedInUser, usersData }) => {
       key: "3",
       danger: true,
       label: "Delete",
-      disabled: loggedInUser.email === creator.email ? false : true,
+      disabled: loggedInUser?.email === creator?.email ? false : true,
     },
   ];
   return (

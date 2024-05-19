@@ -21,7 +21,7 @@ const Board = ({ tasksData, projectData }) => {
       onSuccess: (data) => {
         console.log(data);
         // message.success("Task Updated Successful");
-        queryClient.invalidateQueries(["tasks"]);
+        // queryClient.invalidateQueries(["tasks"]);
       },
       onError: (error) => message.error(`${error?.response?.data}`),
     });

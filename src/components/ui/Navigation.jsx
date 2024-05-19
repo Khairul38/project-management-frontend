@@ -3,7 +3,7 @@
 import { UserOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown } from "antd";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import { useAuthStore } from "../../store/store";
 
@@ -11,11 +11,13 @@ const Navigation = () => {
   const user = useAuthStore((state) => state.user);
   const userLoggedOut = useAuthStore((state) => state.userLoggedIn);
   const pathname = usePathname();
+  const router = useRouter();
 
   const onClick = ({ key }) => {
     if (key === "3") {
-      userLoggedOut();
+      router.push("/login");
       localStorage.clear();
+      userLoggedOut();
     }
   };
 
@@ -38,10 +40,10 @@ const Navigation = () => {
     },
   ];
   return (
-    <div className="flex items-center justify-between w-full h-16 px-10 bg-white bg-opacity-75">
+    <div className="flex items-center justify-between w-full py-3 px-10 bg-white bg-opacity-75">
       <Link href="/">
         {/* <img src={logoImage} className="h-10 w-10 cursor-pointer" alt="" /> */}
-        <svg width="32" height="32" viewBox="0 0 32 32">
+        <svg width="40" height="40" viewBox="0 0 32 32">
           <defs>
             <linearGradient
               x1="28.538%"

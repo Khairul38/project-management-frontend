@@ -4,6 +4,8 @@ import moment from "moment";
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 import TaskModal from "../ui/TaskModal";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 
 const Task = ({ projectData, loggedInUser, task, index }) => {
   const {
@@ -19,25 +21,26 @@ const Task = ({ projectData, loggedInUser, task, index }) => {
     match,
   } = task;
 
-  // const { user: loggedInUser } = useSelector((state) => state.auth);
+  const queryClient = useQueryClient();
 
-  // const [deleteProject, { isLoading }] = useDeleteProjectMutation();
-
-  // const handleDeleteProject = () => {
-  //   if (!isLoading) {
-  //     deleteProject({ id, email: loggedInUser.email });
-  //     notify("Project Deleted Successfully");
-  //   }
-  // };
+  // Delete Task
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: async (id) =>
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/tasks/${id}`
+      ),
+    onSuccess: (data) => {
+      message.success("Task Deleted Successful");
+      queryClient.invalidateQueries(["tasks"]);
+    },
+    onError: (error) => message.error(`${error?.response?.data}`),
+  });
 
   const onClick = ({ key }) => {
-    // if (key === "1") {
-    //   router.push(`/projectBoard/${id}`);
-    // }
-    // if (key === "3") {
-    //   message.loading("Project Deleting...");
-    //   mutate(id);
-    // }
+    if (key === "2") {
+      message.loading("Task Deleting...");
+      mutate(id);
+    }
   };
 
   const items = [
@@ -53,10 +56,10 @@ const Task = ({ projectData, loggedInUser, task, index }) => {
       ),
     },
     {
-      key: "3",
+      key: "2",
       danger: true,
       label: "Delete",
-      disabled: loggedInUser.email === creator.email ? false : true,
+      disabled: loggedInUser?.email === creator?.email ? false : true,
     },
   ];
 
