@@ -31,12 +31,12 @@ const HomePage = () => {
   } = useQuery({
     queryKey: ["projects"],
     queryFn: async () =>
-      await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/projects`),
+      await axios.get(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/projects?members.email=${user.email}&_sort=date&_order=desc`
+      ),
   });
 
-  // Create Projects
-
-  console.log(userData);
+  // console.log(userData);
 
   if (projectLoading)
     return (
@@ -49,11 +49,20 @@ const HomePage = () => {
         <Navigation />
         <div className="px-10 mt-6 flex justify-between">
           <h1 className="text-2xl font-bold">Projects</h1>
-          <ProjectModal userData={userData?.data} status="create" />
+          <ProjectModal
+            userData={userData?.data}
+            loggedInUser={user}
+            status="create"
+          />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 px-10 mt-4 gap-6 overflow-auto">
           {projectsData?.data.map((project) => (
-            <Project key={project.id} project={project} loggedInUser={user} />
+            <Project
+              key={project.id}
+              project={project}
+              loggedInUser={user}
+              usersData={userData?.data}
+            />
           ))}
         </div>
       </div>

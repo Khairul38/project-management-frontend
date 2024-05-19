@@ -6,6 +6,11 @@ export const useAuthStore = create((set) => ({
   userLoggedOut: () => set({ user: undefined }),
 }));
 
+export const useTaskStore = create((set) => ({
+  searchString: "",
+  search: (data) => set({ searchString: data }),
+}));
+
 // export const useStore = create((set) => ({
 //   bears: 0,
 //   increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),

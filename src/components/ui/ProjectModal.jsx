@@ -1,3 +1,4 @@
+import { useMutation, que, useQueryClient } from "@tanstack/react-query";
 import MultiModal from "../common/MultiModal";
 import {
   Button,
@@ -13,6 +14,7 @@ import {
 import FormItem from "antd/es/form/FormItem";
 import TextArea from "antd/es/input/TextArea";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const ProjectCreateForm = ({
   initialValues,
@@ -21,15 +23,17 @@ const ProjectCreateForm = ({
 }) => {
   const [form] = Form.useForm();
 
+  // console.log(userData);
+
   // Create a map to store additional data
-  const userMap = userData.reduce((acc, user) => {
-    acc[user.id] = user;
-    return acc;
-  }, {});
+  // const userMap = userData.reduce((acc, user) => {
+  //   acc[user.id] = user;
+  //   return acc;
+  // }, {});
 
   useEffect(() => {
     onFormInstanceReady(form);
-  }, []);
+  }, [form, onFormInstanceReady]);
   return (
     <Form
       layout="vertical"
@@ -94,19 +98,15 @@ const ProjectCreateForm = ({
         <Select
           mode="multiple"
           allowClear
-          virtual
-          listItemHeight={10}
-          listHeight={250}
-          // maxTagCount="responsive" // This helps manage the display of selected tags
-          // dropdownRender={(menu) => <div>{menu}</div>}
+          virtual={false}
           style={{
             width: "100%",
           }}
           placeholder="Please select"
-          onChange={(selectedIds) => {
-            const selectedUsers = selectedIds.map((id) => userMap[id]);
-            form.setFieldsValue({ membersDetails: selectedUsers });
-          }}
+          // onChange={(selectedIds) => {
+          //   const selectedUsers = selectedIds.map((id) => userMap[id]);
+          //   form.setFieldValue({ membersDetails: selectedUsers });
+          // }}
           options={userData.map((user) => ({
             label: user.email,
             value: user.email,
@@ -124,13 +124,14 @@ const ProjectCreateFormModal = ({
   initialValues,
   confirmLoading,
   userData,
+  status,
 }) => {
   const [formInstance, setFormInstance] = useState();
   return (
     <Modal
       open={open}
-      title="Create a new project"
-      okText="Create"
+      title={status === "create" ? "Create a new project" : "Update a project"}
+      okText={status === "create" ? "Create" : "Update"}
       cancelText="Cancel"
       okButtonProps={{
         autoFocus: true,
@@ -159,51 +160,121 @@ const ProjectCreateFormModal = ({
   );
 };
 
-const ProjectModal = ({ userData }) => {
-  const [formValues, setFormValues] = useState();
+const ProjectModal = ({ userData, loggedInUser, status, project }) => {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
+  console.log(status);
+
+  // Create Projects
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (data) =>
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/projects`,
+        data
+      ),
+    onSuccess: (data) => {
+      console.log(data);
+      message.success("Project Created Successful");
+      queryClient.invalidateQueries(["projects"]);
+      setOpen(false);
+    },
+    onError: (error) => message.error(`${error?.response?.data}`),
+  });
+
+  // Update project
+  const { mutate: updateMutate, isPending: UpdatePending } = useMutation({
+    mutationFn: async (data) =>
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/projects/${project.id}`,
+        data
+      ),
+    onSuccess: (data) => {
+      console.log(data);
+      message.success("Project Updated Successful");
+      queryClient.invalidateQueries(["projects"]);
+      setOpen(false);
+    },
+    onError: (error) => message.error(`${error?.response?.data}`),
+  });
+
   const onCreate = (values) => {
-    console.log("Received values of form: ", values);
-    // setFormValues(values);
-    setOpen(false);
+    const data = {
+      title: values.title,
+      description: values.description,
+      color: values.color,
+      members: [
+        ...userData.filter((user) => values.members.includes(user.email)),
+        {
+          name: loggedInUser.name,
+          email: loggedInUser.email,
+          id: loggedInUser.id,
+        },
+      ],
+      creator: {
+        name: loggedInUser.name,
+        email: loggedInUser.email,
+        id: loggedInUser.id,
+      },
+      date: new Date(),
+    };
+    const updateData = {
+      title: values.title,
+      description: values.description,
+      color: values.color,
+      members: userData?.filter((user) => values.members.includes(user.email)),
+    };
+    // console.log("Received values of form: ",values, updateData);
+    if (status === "create") {
+      mutate(data);
+    }
+    if (status === "edit") {
+      updateMutate(updateData);
+    }
   };
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="flex items-center justify-center w-6 h-6 ml-auto text-indigo-500 rounded hover:bg-indigo-500 hover:text-indigo-100"
-      >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+      {status === "create" ? (
+        <button
+          onClick={() => setOpen(true)}
+          className="flex items-center justify-center w-6 h-6 ml-auto text-indigo-500 rounded hover:bg-indigo-500 hover:text-indigo-100"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-          ></path>
-        </svg>
-      </button>
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            ></path>
+          </svg>
+        </button>
+      ) : (
+        <span className="w-full" onClick={() => setOpen(true)}>
+          Edit
+        </span>
+      )}
       <ProjectCreateFormModal
         open={open}
+        status={status}
         onCreate={onCreate}
         onCancel={() => setOpen(false)}
-        confirmLoading={false}
+        confirmLoading={status === "create" ? isPending : UpdatePending}
         userData={userData}
-        // initialValues={{
-        //   title: "Frontend Development",
-        //   description: "Design and Develop all frontend component",
-        //   members: [
-        //     { label: "a11", value: "1" },
-        //     { label: "c14", value: "3" },
-        //   ],
-        //   color: "",
-        // }}
+        initialValues={{
+          title: project?.title,
+          description: project?.description,
+          members: project?.members.map((user) => ({
+            label: user.email,
+            value: user.email,
+          })),
+          color: project?.color,
+        }}
       />
     </>
   );

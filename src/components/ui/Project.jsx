@@ -3,38 +3,65 @@ import {
   MoreOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Dropdown, Tooltip } from "antd";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Avatar, Button, Dropdown, Tooltip, message } from "antd";
+import axios from "axios";
 import moment from "moment";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
+import ProjectModal from "./ProjectModal";
 
-const Project = ({ project, loggedInUser }) => {
+const Project = ({ project, loggedInUser, usersData }) => {
   const { id, title, color, description, date, members } = project;
 
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  // Create Projects
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: async (id) =>
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/projects/${id}`
+      ),
+    onSuccess: (data) => {
+      console.log(data);
+      message.success("Project Deleted Successful");
+      queryClient.invalidateQueries(["projects"]);
+    },
+    onError: (error) => message.error(`${error?.response?.data}`),
+  });
+
+  const onClick = ({ key }) => {
+    if (key === "1") {
+      router.push(`/projectBoard/${id}`);
+    }
+    if (key === "3") {
+      message.loading("Project Deleting...");
+      mutate(id);
+    }
+  };
 
   const items = [
     {
       key: "1",
-      label: (
-        <button
-          onClick={() => {
-            router.push(`/projectBoard/${id}`);
-          }}
-        >
-          View
-        </button>
-      ),
+      label: "View",
     },
     {
       key: "2",
-      label: "Edit",
+      label: (
+        <ProjectModal
+          userData={usersData}
+          loggedInUser={loggedInUser}
+          status="edit"
+          project={project}
+        />
+      ),
     },
     {
       key: "3",
       danger: true,
-      label: <button onClick={() => {}}>Delete</button>,
+      label: "Delete",
     },
   ];
   return (
@@ -66,6 +93,7 @@ const Project = ({ project, loggedInUser }) => {
           <Dropdown
             menu={{
               items,
+              onClick,
             }}
             // trigger={["click"]}
             placement="bottomRight"
@@ -87,7 +115,7 @@ const Project = ({ project, loggedInUser }) => {
         <h4 className="mt-3 text-sm font-medium">{description}</h4>
         <div className="mt-2 flex gap-1">
           <Avatar.Group
-            maxCount={2}
+            maxCount={3}
             maxStyle={{
               color: "#f56a00",
               backgroundColor: "#fde3cf",
@@ -100,7 +128,7 @@ const Project = ({ project, loggedInUser }) => {
               //   src={gravatarUrl(m)}
               //   alt=""
               // />
-              <Tooltip key={index} title="Ant User" placement="top">
+              <Tooltip key={index} title={m.name} placement="top">
                 <Avatar
                   style={{
                     cursor: "pointer",
