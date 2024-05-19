@@ -13,7 +13,7 @@ import React from "react";
 import ProjectModal from "./ProjectModal";
 
 const Project = ({ project, loggedInUser, usersData }) => {
-  const { id, title, color, description, date, members } = project;
+  const { id, title, color, description, date, members, creator } = project;
 
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -62,6 +62,7 @@ const Project = ({ project, loggedInUser, usersData }) => {
       key: "3",
       danger: true,
       label: "Delete",
+      disabled: loggedInUser.email === creator.email ? false : true,
     },
   ];
   return (

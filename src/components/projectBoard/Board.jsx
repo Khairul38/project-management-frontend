@@ -1,14 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import Column from "./Column";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { message } from "antd";
 
-const Board = ({ tasksData }) => {
+const Board = ({ tasksData, projectData }) => {
+  const queryClient = useQueryClient();
   const [boardTasks, setBoardTasks] = useState(tasksData);
   // const [updatedProject] = useUpdateTaskMutation();
+
+  // Update Task
+  const { mutate: updateTaskMutate, isPending: UpdateTaskPending } =
+    useMutation({
+      mutationFn: async ({ data, id }) =>
+        await axios.patch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/tasks/${id}`,
+          data
+        ),
+      onSuccess: (data) => {
+        console.log(data);
+        // message.success("Task Updated Successful");
+        queryClient.invalidateQueries(["tasks"]);
+      },
+      onError: (error) => message.error(`${error?.response?.data}`),
+    });
 
   useEffect(() => {
     setBoardTasks(tasksData);
   }, [tasksData]);
+
+  console.log(boardTasks);
 
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
@@ -33,9 +55,9 @@ const Board = ({ tasksData }) => {
     // result[droppableSource.droppableId] = sourceClone;
     // result[droppableDestination.droppableId] = destClone;
 
-    updatedProject({
-      id: removed.id,
+    updateTaskMutate({
       data: { stage: droppableDestination.droppableId },
+      id: removed.id,
     });
 
     return result;
@@ -51,26 +73,26 @@ const Board = ({ tasksData }) => {
       return;
     }
     if (source.droppableId === destination.droppableId) {
-      const filteredSourceProjects = boardProjects.filter(
+      const filteredSourceTasks = boardTasks.filter(
         (p) => p.stage === source.droppableId
       );
-      const filteredRestProjects = boardProjects.filter(
+      const filteredRestTasks = boardTasks.filter(
         (p) => p.stage !== source.droppableId
       );
       const items = reorder(
-        filteredSourceProjects,
+        filteredSourceTasks,
         source.index,
         destination.index
       );
-      setBoardProjects([...filteredRestProjects, ...items]);
+      setBoardTasks([...filteredRestTasks, ...items]);
     } else {
-      const filteredSourceProjects = boardProjects.filter(
+      const filteredSourceTasks = boardTasks.filter(
         (p) => p.stage === source.droppableId
       );
-      const filteredDestinationProjects = boardProjects.filter(
+      const filteredDestinationTasks = boardTasks.filter(
         (p) => p.stage === destination.droppableId
       );
-      const filteredRestProjects = boardProjects.filter((p) => {
+      const filteredRestTasks = boardTasks.filter((p) => {
         if (p.stage === source.droppableId) {
           return false;
         } else if (p.stage === destination.droppableId) {
@@ -80,19 +102,20 @@ const Board = ({ tasksData }) => {
         }
       });
       const result = move(
-        filteredSourceProjects,
-        filteredDestinationProjects,
+        filteredSourceTasks,
+        filteredDestinationTasks,
         source,
         destination
       );
-      setBoardProjects([...filteredRestProjects, ...result]);
+      setBoardTasks([...filteredRestTasks, ...result]);
     }
   };
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex flex-grow px-10 mt-4 space-x-5 overflow-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400 scrollbar-track-rounded-full scrollbar-thumb-rounded-full">
+      <div className="flex flex-grow px-10 mt-4 space-x-5 overflow-auto !scrollbar-thin !scrollbar-track-transparent !scrollbar-thumb-gray-400 !scrollbar-track-rounded-full !scrollbar-thumb-rounded-full">
         <Column
+          projectData={projectData}
           boardTasks={boardTasks}
           stage="Todo"
           // controlModal={controlModal}

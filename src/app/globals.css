@@ -13,3 +13,16 @@
 svg {
   vertical-align: initial;
 }
+
+/* Scrollbar */
+/* .ant-table-content {
+  @apply scrollbar-thin scrollbar-track-transparent scrollbar-thumb-blue-200 scrollbar-track-rounded-full scrollbar-thumb-rounded-full;
+}
+
+.ant-menu {
+  @apply scrollbar-thin scrollbar-track-transparent scrollbar-thumb-blue-200 scrollbar-track-rounded-full scrollbar-thumb-rounded-full;
+}
+
+.ant-drawer-body {
+  @apply  !p-0 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-blue-200 scrollbar-track-rounded-full scrollbar-thumb-rounded-full;
+} */

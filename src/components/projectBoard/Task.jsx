@@ -3,8 +3,9 @@ import { Avatar, Button, Dropdown, Tooltip, message } from "antd";
 import moment from "moment";
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
+import TaskModal from "../ui/TaskModal";
 
-const Task = ({ task, index }) => {
+const Task = ({ projectData, loggedInUser, task, index }) => {
   const {
     id,
     date,
@@ -14,7 +15,7 @@ const Task = ({ task, index }) => {
     color,
     team,
     creator,
-    assignedMembers,
+    assignMembers,
     match,
   } = task;
 
@@ -42,23 +43,20 @@ const Task = ({ task, index }) => {
   const items = [
     {
       key: "1",
-      label: "View",
+      label: (
+        <TaskModal
+          userData={projectData?.members}
+          loggedInUser={loggedInUser}
+          status="edit"
+          task={task}
+        />
+      ),
     },
-    // {
-    //   key: "2",
-    //   label: (
-    //     <ProjectModal
-    //       userData={usersData}
-    //       loggedInUser={loggedInUser}
-    //       status="edit"
-    //       project={project}
-    //     />
-    //   ),
-    // },
     {
       key: "3",
       danger: true,
       label: "Delete",
+      disabled: loggedInUser.email === creator.email ? false : true,
     },
   ];
 
@@ -126,7 +124,7 @@ const Task = ({ task, index }) => {
                   backgroundColor: "#fde3cf",
                 }}
               >
-                {assignedMembers.map((m, index) => (
+                {assignMembers.map((m, index) => (
                   <Tooltip key={index} title={m.name} placement="top">
                     <Avatar
                       style={{

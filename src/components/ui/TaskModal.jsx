@@ -16,11 +16,7 @@ import TextArea from "antd/es/input/TextArea";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const ProjectCreateForm = ({
-  initialValues,
-  onFormInstanceReady,
-  userData,
-}) => {
+const TaskCreateForm = ({ initialValues, onFormInstanceReady, userData }) => {
   const [form] = Form.useForm();
 
   // console.log(userData);
@@ -49,7 +45,7 @@ const ProjectCreateForm = ({
             rules={[
               {
                 required: true,
-                message: "Please input the title of project!",
+                message: "Please input the title of task!",
               },
             ]}
           >
@@ -57,12 +53,12 @@ const ProjectCreateForm = ({
           </FormItem>
         </div>
         <FormItem
-          label="Project Color"
+          label="Task Color"
           name="color"
           rules={[
             {
               required: true,
-              message: "Please pick the color of project!",
+              message: "Please pick the color of task!",
             },
           ]}
         >
@@ -79,19 +75,19 @@ const ProjectCreateForm = ({
         rules={[
           {
             required: true,
-            message: "Please input the description of project!",
+            message: "Please input the description of task!",
           },
         ]}
       >
         <TextArea rows={2} />
       </FormItem>
       <FormItem
-        label="Add Members"
-        name="members"
+        label="Assign Members"
+        name="assignMembers"
         rules={[
           {
             required: true,
-            message: "Please Add Members!",
+            message: "Please Assign Members!",
           },
         ]}
       >
@@ -117,7 +113,7 @@ const ProjectCreateForm = ({
   );
 };
 
-const ProjectCreateFormModal = ({
+const TaskCreateFormModal = ({
   open,
   onCreate,
   onCancel,
@@ -130,7 +126,7 @@ const ProjectCreateFormModal = ({
   return (
     <Modal
       open={open}
-      title={status === "create" ? "Create a new project" : "Update a project"}
+      title={status === "create" ? "Create a new task" : "View/Update a task"}
       okText={status === "create" ? "Create" : "Update"}
       cancelText="Cancel"
       okButtonProps={{
@@ -149,7 +145,7 @@ const ProjectCreateFormModal = ({
         }
       }}
     >
-      <ProjectCreateForm
+      <TaskCreateForm
         initialValues={initialValues}
         userData={userData}
         onFormInstanceReady={(instance) => {
@@ -160,39 +156,36 @@ const ProjectCreateFormModal = ({
   );
 };
 
-const ProjectModal = ({ userData, loggedInUser, status, project }) => {
+const TaskModal = ({ userData, projectData, loggedInUser, status, task }) => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
   console.log(status);
 
-  // Create Project
+  // Create Task
   const { mutate, isPending } = useMutation({
     mutationFn: async (data) =>
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/projects`,
-        data
-      ),
+      await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/tasks`, data),
     onSuccess: (data) => {
       console.log(data);
-      message.success("Project Created Successful");
-      queryClient.invalidateQueries(["projects"]);
+      message.success("Task Created Successful");
+      queryClient.invalidateQueries(["tasks"]);
       setOpen(false);
     },
     onError: (error) => message.error(`${error?.response?.data}`),
   });
 
-  // Update Project
+  // Update Task
   const { mutate: updateMutate, isPending: UpdatePending } = useMutation({
     mutationFn: async (data) =>
       await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/projects/${project.id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/tasks/${task.id}`,
         data
       ),
     onSuccess: (data) => {
       console.log(data);
-      message.success("Project Updated Successful");
-      queryClient.invalidateQueries(["projects"]);
+      message.success("Task Updated Successful");
+      queryClient.invalidateQueries(["tasks"]);
       setOpen(false);
     },
     onError: (error) => message.error(`${error?.response?.data}`),
@@ -200,17 +193,14 @@ const ProjectModal = ({ userData, loggedInUser, status, project }) => {
 
   const onCreate = (values) => {
     const data = {
+      project: projectData,
       title: values.title,
       description: values.description,
       color: values.color,
-      members: [
-        ...userData.filter((user) => values.members.includes(user.email)),
-        {
-          name: loggedInUser.name,
-          email: loggedInUser.email,
-          id: loggedInUser.id,
-        },
-      ],
+      stage: "Todo",
+      assignMembers: userData.filter((user) =>
+        values.assignMembers.includes(user.email)
+      ),
       creator: {
         name: loggedInUser.name,
         email: loggedInUser.email,
@@ -222,7 +212,9 @@ const ProjectModal = ({ userData, loggedInUser, status, project }) => {
       title: values.title,
       description: values.description,
       color: values.color,
-      members: userData?.filter((user) => values.members.includes(user.email)),
+      assignMembers: userData?.filter((user) =>
+        values.assignMembers.includes(user.email)
+      ),
     };
     // console.log("Received values of form: ",values, updateData);
     if (status === "create") {
@@ -256,10 +248,10 @@ const ProjectModal = ({ userData, loggedInUser, status, project }) => {
         </button>
       ) : (
         <span className="w-full" onClick={() => setOpen(true)}>
-          Edit
+          View/Edit
         </span>
       )}
-      <ProjectCreateFormModal
+      <TaskCreateFormModal
         open={open}
         status={status}
         onCreate={onCreate}
@@ -267,16 +259,16 @@ const ProjectModal = ({ userData, loggedInUser, status, project }) => {
         confirmLoading={status === "create" ? isPending : UpdatePending}
         userData={userData}
         initialValues={{
-          title: project?.title,
-          description: project?.description,
-          members: project?.members.map((user) => ({
+          title: task?.title,
+          description: task?.description,
+          assignMembers: task?.assignMembers.map((user) => ({
             label: user.email,
             value: user.email,
           })),
-          color: project?.color,
+          color: task?.color,
         }}
       />
     </>
   );
 };
-export default ProjectModal;
+export default TaskModal;

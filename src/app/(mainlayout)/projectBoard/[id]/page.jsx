@@ -51,7 +51,7 @@ const ProjectBoardPage = ({ params }) => {
           <span className="text-blue-700">{projectData.data.title}</span>
         </h1>
       </div>
-      <Board tasksData={tasksData?.data} />
+      <Board tasksData={tasksData?.data} projectData={projectData.data} />
     </div>
   );
 };
