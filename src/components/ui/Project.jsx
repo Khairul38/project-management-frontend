@@ -78,11 +78,11 @@ const Project = ({ project, loggedInUser }) => {
 
         <span
           style={{
-            color: color,
+            backgroundColor: `${color}33`, // Adding 33 to color for 20% opacity in hex
           }}
-          className={`flex items-center h-6 px-3 text-xs font-semibold rounded-full bg-[${color}] bg-opacity-20`}
+          className={`flex items-center h-6 px-3 text-xs font-semibold rounded-full`}
         >
-          <p>{title}</p>
+          <p style={{ color: color }}>{title}</p>
         </span>
         <h4 className="mt-3 text-sm font-medium">{description}</h4>
         <div className="mt-2 flex gap-1">

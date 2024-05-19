@@ -14,8 +14,19 @@ import FormItem from "antd/es/form/FormItem";
 import TextArea from "antd/es/input/TextArea";
 import React, { useEffect, useState } from "react";
 
-const ProjectCreateForm = ({ initialValues, onFormInstanceReady }) => {
+const ProjectCreateForm = ({
+  initialValues,
+  onFormInstanceReady,
+  userData,
+}) => {
   const [form] = Form.useForm();
+
+  // Create a map to store additional data
+  const userMap = userData.reduce((acc, user) => {
+    acc[user.id] = user;
+    return acc;
+  }, {});
+
   useEffect(() => {
     onFormInstanceReady(form);
   }, []);
@@ -51,7 +62,11 @@ const ProjectCreateForm = ({ initialValues, onFormInstanceReady }) => {
             },
           ]}
         >
-          <ColorPicker />
+          <ColorPicker
+            onChange={(value) =>
+              form.setFieldsValue({ color: value.toHexString() })
+            }
+          />
         </FormItem>
       </div>
       <FormItem
@@ -79,20 +94,21 @@ const ProjectCreateForm = ({ initialValues, onFormInstanceReady }) => {
         <Select
           mode="multiple"
           allowClear
+          // virtual
+          // listItemHeight={10}
+          // listHeight={250}
           style={{
             width: "100%",
           }}
           placeholder="Please select"
-          defaultValue={[
-            { label: "a10", value: "1" },
-            { label: "c14", value: "3" },
-          ]}
-          // onChange={handleChange}
-          options={[
-            { label: "a10", value: "1" },
-            { label: "b12", value: "2" },
-            { label: "c14", value: "3" },
-          ]}
+          onChange={(selectedIds) => {
+            const selectedUsers = selectedIds.map((id) => userMap[id]);
+            form.setFieldsValue({ members: selectedUsers });
+          }}
+          options={userData.map((user) => ({
+            label: user.email,
+            value: user.id,
+          }))}
         />
       </FormItem>
     </Form>
@@ -105,6 +121,7 @@ const ProjectCreateFormModal = ({
   onCancel,
   initialValues,
   confirmLoading,
+  userData,
 }) => {
   const [formInstance, setFormInstance] = useState();
   return (
@@ -131,6 +148,7 @@ const ProjectCreateFormModal = ({
     >
       <ProjectCreateForm
         initialValues={initialValues}
+        userData={userData}
         onFormInstanceReady={(instance) => {
           setFormInstance(instance);
         }}
@@ -139,7 +157,7 @@ const ProjectCreateFormModal = ({
   );
 };
 
-const ProjectModal = () => {
+const ProjectModal = ({ userData }) => {
   const [formValues, setFormValues] = useState();
   const [open, setOpen] = useState(false);
 
@@ -174,12 +192,16 @@ const ProjectModal = () => {
         onCreate={onCreate}
         onCancel={() => setOpen(false)}
         confirmLoading={false}
-        initialValues={{
-          title: "Frontend Development",
-          description: "Design and Develop all frontend component",
-          members: [{}],
-          color: "",
-        }}
+        userData={userData}
+        // initialValues={{
+        //   title: "Frontend Development",
+        //   description: "Design and Develop all frontend component",
+        //   members: [
+        //     { label: "a11", value: "1" },
+        //     { label: "c14", value: "3" },
+        //   ],
+        //   color: "",
+        // }}
       />
     </>
   );
